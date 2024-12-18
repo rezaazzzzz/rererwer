@@ -1,6 +1,7 @@
-import { Controller, Get, Post, Body, UseGuards, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RolesGuard } from './gaurd/user.gaurd';  
+import { JwtAuthGuard } from '././gaurd/authgaurd';  // اضافه کردن گارد JwtAuthGuard
 import { Roles } from './roles'; 
 import { UserRole } from './user.role.enum';
 
@@ -24,8 +25,8 @@ export class UserController {
   }
 
   @Post('admin/approve-password-reset')
+  @UseGuards(JwtAuthGuard, RolesGuard)  
   @Roles(UserRole.ADMIN)  
-  @UseGuards(RolesGuard)
   async approvePasswordReset(
     @Body() { requestId, newPassword }: { requestId: string, newPassword: string }
   ) {
@@ -33,8 +34,8 @@ export class UserController {
   }
 
   @Get('admin/password-reset-requests')
+  @UseGuards(JwtAuthGuard, RolesGuard)  
   @Roles(UserRole.ADMIN)  
-  @UseGuards(RolesGuard)
   async getPasswordResetRequests() {
     return await this.userService.getPasswordResetRequests();
   }

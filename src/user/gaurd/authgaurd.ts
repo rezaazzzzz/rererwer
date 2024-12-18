@@ -1,6 +1,5 @@
-import { HttpException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, HttpException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ExecutionContext, Injectable, CanActivate } from '@nestjs/common';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -16,9 +15,11 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const decoded = this.jwtService.verify(token.replace('Bearer ', ''));
-      request.user = decoded; 
+      request.user = decoded;
+      console.log("Decoded JWT: ", decoded); 
       return true;
     } catch (error) {
+      console.log("JWT verification error: ", error);
       throw new HttpException('Unauthorized', 401);
     }
   }

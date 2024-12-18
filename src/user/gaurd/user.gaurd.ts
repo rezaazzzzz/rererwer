@@ -1,6 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserRole } from './../user.role.enum';  
+
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
@@ -10,15 +11,23 @@ export class RolesGuard implements CanActivate {
 
     if (!requiredRoles) {
       return true; 
+    }
 
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    if (!user || !requiredRoles.includes(user.role)) {
+    console.log("User in RolesGuard: ", user);  
+
+    if (!user) {
+      throw new ForbiddenException('User information is missing from request');
+    }
+
+    console.log("User role in RolesGuard: ", user.role); 
+
+    if (!requiredRoles.includes(user.role)) {
       throw new ForbiddenException('You do not have permission to access this resource');
     }
 
     return true;
   }
-}
 }
